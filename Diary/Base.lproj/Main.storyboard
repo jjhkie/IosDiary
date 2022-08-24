@@ -98,7 +98,7 @@
         <!--일기 작성-->
         <scene sceneID="1eV-rW-JOA">
             <objects>
-                <viewController id="u9T-nC-me8" customClass="WriteDiaryViewController" customModule="Diary" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WriteDiaryViewController" id="u9T-nC-me8" customClass="WriteDiaryViewController" customModule="Diary" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="O7h-9w-dxc">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -168,7 +168,7 @@
                     <navigationItem key="navigationItem" title="일기 작성" id="1QH-aP-iRX">
                         <barButtonItem key="rightBarButtonItem" title="등록" id="SkQ-wq-YOv">
                             <connections>
-                                <action selector="tapConfirmBUtton:" destination="u9T-nC-me8" id="6ZC-Kn-Pr9"/>
+                                <action selector="tapConfirmButton:" destination="u9T-nC-me8" id="mes-ge-lQe"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
