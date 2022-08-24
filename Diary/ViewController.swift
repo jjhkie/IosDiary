@@ -93,10 +93,30 @@ extension ViewController: UICollectionViewDelegateFlowLayout{
     }
 }
 
+extension ViewController: UICollectionViewDelegate{
+    //특정 셀이 선택되었음을 알려주는 코드
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let viewController = self.storyboard?.instantiateViewController(withIdentifier: "DiaryDetailViewController") as? DiaryDetailViewController else {return}
+        let diary = self.diaryList[indexPath.row]
+        viewController.diary = diary
+        viewController.indexPath = indexPath
+        viewController.delegate = self
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
+}
+
 extension ViewController: WriteDiaryViewDelegate{
     func didSelectRegister(diary: Diary) {
         self.diaryList.append(diary)
         self.diaryList = self.diaryList.sorted(by: {$0.date.compare($1.date) == .orderedDescending})
         self.collectionView.reloadData()
+
+    }
+}
+
+extension ViewController: DiaryDetailViewDelegate{
+    func didSelectDelete(indexPath: IndexPath) {
+        self.diaryList.remove(at: indexPath.row)
+        self.collectionView.deleteItems(at: [indexPath])
     }
 }
