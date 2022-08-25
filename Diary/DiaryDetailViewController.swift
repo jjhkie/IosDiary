@@ -2,17 +2,18 @@
 
 import UIKit
 
-protocol DiaryDetailViewDelegate: AnyObject{
-    func didSelectDelete(indexPath: IndexPath)
-}
+//protocol DiaryDetailViewDelegate: AnyObject{
+//    func didSelectDelete(indexPath: IndexPath)
+//}
 
 class DiaryDetailViewController: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var contentsTextView: UITextView!
     @IBOutlet weak var dateLabel: UILabel!
+    var starButton: UIBarButtonItem?
     
-    weak var delegate: DiaryDetailViewDelegate?
+    //weak var delegate: DiaryDetailViewDelegate?
     
     var diary: Diary?
     var indexPath: IndexPath?
@@ -28,6 +29,35 @@ class DiaryDetailViewController: UIViewController {
         self.titleLabel.text = diary.title
         self.contentsTextView.text = diary.contents
         self.dateLabel.text =  self.dateToString(date: diary.date)
+        self.starButton = UIBarButtonItem(image: nil, style: .plain, target: self, action: #selector(tapStarButton))
+        self.starButton?.image = diary.isStar ? UIImage(systemName: "star.fill") : UIImage(systemName: "star")
+        self.starButton?.tintColor = .orange
+        self.navigationItem.rightBarButtonItem = self.starButton
+    }
+    
+    ///즐겨찾기 버튼을 눌렀을 때 icon 변경되도록 하는 코드
+    @objc func tapStarButton(){
+        guard let isStar = self.diary?.isStar else { return}
+        guard let indexPath = self.indexPath else { return }
+        if isStar {
+            self.starButton?.image = UIImage(systemName: "star")
+        }else {
+            self.starButton?.image = UIImage(systemName: "star.fill")
+        }
+        
+        self.diary?.isStar = !isStar
+        
+        NotificationCenter.default.post(
+            name: NSNotification.Name("starDiary"),
+            object: [
+                "isStar": self.diary?.isStar ?? false,
+                "indexPath": indexPath
+            ]
+        ,userInfo: nil
+        )
+    
+        
+       //self.delegate?.didSelectStar(indexPath: indexPath, isStar: self.diary?.isStar ?? false)
     }
     
     ///Date -> String 으로
@@ -68,7 +98,11 @@ class DiaryDetailViewController: UIViewController {
     //삭제 버튼을 눌렀을 때 실행되는 코드
     @IBAction func tapDeleteButton(_ sender: UIButton) {
         guard let indexPath = self.indexPath else{ return}
-        self.delegate?.didSelectDelete(indexPath: indexPath)
+        //self.delegate?.didSelectDelete(indexPath: indexPath)
+        NotificationCenter.default.post(
+            name: NSNotification.Name("DeleteDiary"),
+            object: indexPath,
+            userInfo:nil)
         self.navigationController?.popViewController(animated: true)
     }
     
