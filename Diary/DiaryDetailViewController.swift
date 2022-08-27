@@ -22,7 +22,13 @@ class DiaryDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.configureVIew()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(starDiaryNotification(_:)),
+                                               name: NSNotification.Name("starDiary"),
+                                               object: nil)
     }
+    
+    
     
     private func configureVIew(){
         guard let diary = self.diary else{return}
@@ -33,6 +39,19 @@ class DiaryDetailViewController: UIViewController {
         self.starButton?.image = diary.isStar ? UIImage(systemName: "star.fill") : UIImage(systemName: "star")
         self.starButton?.tintColor = .orange
         self.navigationItem.rightBarButtonItem = self.starButton
+    }
+    
+    ///즐겨찾기 버튼 싱크를 위한 코드
+    @objc func starDiaryNotification(_ notification: Notification){
+        guard let starDiary = notification.object as? [String: Any] else { return}
+        guard let isStar = starDiary["isStar"] as? Bool else {return}
+        guard let uuidString = starDiary["uuidString"] as? String else { return}
+        guard let diary = self.diary else { return }
+        if diary.uuidString == uuidString {
+            self.diary?.isStar = isStar
+            self.configureVIew()
+            
+        }
     }
     
     ///즐겨찾기 버튼을 눌렀을 때 icon 변경되도록 하는 코드
@@ -52,7 +71,7 @@ class DiaryDetailViewController: UIViewController {
             object: [
                 "diary": self.diary,
                 "isStar": self.diary?.isStar ?? false,
-                "indexPath": indexPath
+                "uuidString": diary?.uuidString
             ]
         ,userInfo: nil
         )
@@ -89,7 +108,6 @@ class DiaryDetailViewController: UIViewController {
     
     @objc func editDiaryNotification(_ notification: Notification){
         guard let diary = notification.object as? Diary else {return}
-        guard let row = notification.userInfo?["indexPath.row"] as? Int else {return}
         self.diary = diary
         self.configureVIew()
         
@@ -98,11 +116,11 @@ class DiaryDetailViewController: UIViewController {
     
     //삭제 버튼을 눌렀을 때 실행되는 코드
     @IBAction func tapDeleteButton(_ sender: UIButton) {
-        guard let indexPath = self.indexPath else{ return}
+        guard let uuidString = self.diary?.uuidString else{ return}
         //self.delegate?.didSelectDelete(indexPath: indexPath)
         NotificationCenter.default.post(
-            name: NSNotification.Name("DeleteDiary"),
-            object: indexPath,
+            name: NSNotification.Name("deleteDiary"),
+            object: uuidString,
             userInfo:nil)
         self.navigationController?.popViewController(animated: true)
     }
