@@ -35,6 +35,7 @@ class ViewController: UIViewController {
             object: nil)
     }
     
+    ///Edit  notification code
     @objc func editDiaryNotification(_ notification: Notification){
         guard let diary = notification.object as? Diary else {return}
         guard let row = notification.userInfo?["indexPath.row"] as? Int else {return}
@@ -44,12 +45,14 @@ class ViewController: UIViewController {
         })
         self.collectionView.reloadData()
     }
+    ///Star notification code
     @objc func starDiaryNotification(_ notification: Notification){
         guard let starDiary = notification.object as? [String: Any] else {return}
         guard let isStar = starDiary["isStar"] as? Bool else {return}
         guard let indexPath = starDiary["indexPath"] as? IndexPath else { return }
         self.diaryList[indexPath.row].isStar = isStar
     }
+    ///Delete notification code
     @objc func deleteDiaryNotification(_ notification: Notification){
         guard let indexPath = notification.object as? IndexPath else { return }
         self.diaryList.remove(at: indexPath.row)
